@@ -125,6 +125,54 @@
 2. **GREEN** — 해당 ID를 만족하는 최소 구현을 추가합니다. 구현 줄에 계약 ID 주석을 단다.
 3. **REFACTOR** — 테스트가 모두 통과한 상태에서 구조를 개선합니다. 리팩터링 전후로 동작이 동일한지 확인합니다.
 
+## REFACTOR 계획 (Track B · subtotal)
+
+`subtotal` 첫 사이클 GREEN 이후 적용할 **구조 개선 계획**입니다. (아직 미적용 — 문서만)
+
+### 목적
+
+- **Mixed Responsibilities** 해소: E-2 검증과 INV-1 합산을 분리합니다.
+- E-2 검증을 `_validate_line_items(items)`로 추출합니다.
+- **E-1**(`items is None` → `TypeError`)은 `subtotal`에 유지합니다.
+- 호출 순서 불변: **E-1 → E-2 → INV-1** (테스트 플랜 §2.2)
+
+### 변경 범위
+
+| 항목 | 내용 |
+| ---- | ---- |
+| 변경 파일 | `src/cart.py`만 |
+| 테스트 | `tests/` 수정 없음 — 기존 7건으로 회귀 확인 |
+| 제외 | `sum()` 변환, 상수 추출, `apply_threshold_discount` / `final_total` / `THRESHOLD` |
+
+### 목표 구조
+
+```text
+subtotal(items)
+  ├─ items is None → TypeError          # E-1 (subtotal)
+  ├─ _validate_line_items(items)        # E-2 (추출)
+  └─ Σ(price × qty) → return            # INV-1 (subtotal)
+```
+
+### 동작 불변 체크리스트
+
+리팩터 전후 아래가 **동일**해야 합니다.
+
+- **E-1** — `subtotal(None)` → `TypeError` (bare, 메시지 변경 없음)
+- **E-2** — 음수 `price`/`qty` → `ValueError`, 메시지에 인덱스 포함  
+  (`negative price or qty at index {index}` 문자열 유지)
+- **INV-1** — 합계 결과 유지 (`1_000` / `66_000` / `0`)
+
+### 완료 기준
+
+- [ ] 리팩터 **전** `pytest -q` GREEN
+- [ ] `src/cart.py`에 `_validate_line_items` 추출 적용
+- [ ] 리팩터 **후** `pytest -q` GREEN (7건 동일 통과)
+- [ ] 구조 변경과 동작 변경 **분리 커밋**
+
+### 예상 diff
+
+- `src/cart.py` **+3 ~ +5줄** (순증)
+
 ## 테스트 실행
 
 ```bash
