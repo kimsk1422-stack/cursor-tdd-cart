@@ -9,7 +9,7 @@
 상세 발견 근거와 제품 요구사항은 [docs/PRD.md](docs/PRD.md)를 참조하세요.
 첫 사이클(`subtotal`) 테스트 설계·케이스는 [docs/test-plan-INV-1-E-1-E-2.md](docs/test-plan-INV-1-E-1-E-2.md)를 참조하세요.
 
-**현재 단계:** RED 완료 — `tests/entity/test_subtotal.py`에 실패 테스트 7건 작성됨. **GREEN**(`src/cart.py`의 `subtotal` 최소 구현) 대기 중.
+**현재 단계:** GREEN 완료 — `src/cart.py`의 `subtotal` 최소 구현으로 `tests/entity/test_subtotal.py` 7건 통과.
 
 ## 핵심 원칙
 
@@ -100,19 +100,19 @@
 - [x] **E-2-c** — `test_e_2_subtotal_negative_at_later_index` (후행 인덱스 `1`)
 - [x] 각 테스트에 `@pytest.mark.entity`, docstring·주석에 계약 ID 명시
 - [x] `pytest -q` 실행 시 **7건 실패** 확인 (`NotImplementedError`)
-- [ ] `assert True` · `pytest.skip` · 예외 삼키기 **사용 안 함** (지속 준수)
-- [ ] 커밋 (선택): `test: add RED tests for INV-1, E-1, E-2`
+- [x] `assert True` · `pytest.skip` · 예외 삼키기 **사용 안 함** (지속 준수)
+- [x] 커밋: `test: add RED tests for INV-1, E-1, E-2`
 
 ### GREEN (`src/cart.py` 최소 구현)
 
 `subtotal` 내부 권장 순서: **E-1 → E-2 → INV-1** (테스트 플랜 §2.2)
 
-- [ ] **E-1** — `items is None`이면 `TypeError` + `# E-1` 주석
-- [ ] **E-2** — 각 인덱스 `i`에서 `price < 0` 또는 `qty < 0`이면 `ValueError`(메시지에 `i` 포함) + `# E-2` 주석
-- [ ] **INV-1** — `Σ(price × qty)` 반환 + `# INV-1` 주석
-- [ ] `pytest tests/entity/test_subtotal.py -q` **7건 전부 통과**
-- [ ] `pytest -q` **전부 통과**
-- [ ] 커밋 (선택): `feat: implement subtotal for INV-1, E-1, E-2`
+- [x] **E-1** — `items is None`이면 `TypeError` + `# E-1` 주석
+- [x] **E-2** — 각 인덱스 `i`에서 `price < 0` 또는 `qty < 0`이면 `ValueError`(메시지에 `i` 포함) + `# E-2` 주석
+- [x] **INV-1** — `Σ(price × qty)` 반환 + `# INV-1` 주석
+- [x] `pytest tests/entity/test_subtotal.py -q` **7건 전부 통과**
+- [x] `pytest -q` **전부 통과**
+- [x] 커밋: `feat: implement subtotal for INV-1, E-1, E-2`
 
 ### REFACTOR (본 사이클 이후 · 선택)
 
