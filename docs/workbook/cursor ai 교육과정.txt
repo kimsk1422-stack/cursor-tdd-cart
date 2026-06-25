@@ -1,0 +1,87 @@
+cursor ai 교육과정 (TDD)
+하윤미 삼성소속
+김대경 강사 HSG
+https://github.com/kznetwork/
+
+https://github.com/github/github-mcp-server/blob/main/docs/installation-guides/install-cursor.md
+github apikey - GitHub Token (classic)
+ghp_<YOUR_GITHUB_TOKEN>
+
+https://smithery.ai/servers/upstash/context7-mcp
+https://context7.com/docs/resources/all-clients#cursor
+context7 apikey
+ctx7sk_<YOUR_CONTEXT7_API_KEY>
+
+https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking
+
+
+현업꿀팁
+MCP 연결 필수 : context7, sequential-thinking, github
+내가 갖고 있는자료는 docs 폴더에 넣어서 ai에 전달하는게 암묵적인 룰
+
+TDD는 ~~ 한 개발 방법론 같은거다.
+
+TDD로 개발하면 계약 ID <-> 테스트 <-> 구현이 1:1로 이어지면서 C2C가 보장된다.
+
+크게 디스커버리 단계와 딜리버리 단계로 나뉜다.
+Discovery (코드 짜기 전)
+0 Mom — Test 사용자를 인터뷰하여 상상 속 가짜 문제가 아닌 '실제 사례와 진짜 불편함(Concept)'을 채굴.
+1 목표 — 보장 + ECB(Entity, Control, Boundary _ 하네스 & 폴더 구조)·C2C(Concept-to-Code)·트랙
+2 PRD — '무엇이 실패인가' L0~L3
+3 불변식·Error Contract에 ID 부여
+4 스켈레톤 — 시그니처+TODO (완성 코드 감춤)
+Delivery — ARRR
+5 Ask (RED) — ID마다 실패 테스트, src/ 금지
+6 Respond (GREEN) — 최소 구현 + ID 주석
+7 Refine (REFACTOR) — SSOT 추출
+8 Repeat — 다음 ID + 회귀, 최소 3회
+
+
+
+맘 테스트(Mom Test)는 현실 세계의 진짜 문제와 사실을 캐내는 '채굴기'이고,
+그렇게 캐낸 원석을 기계적으로 가공해서 분류한 결과물이 바로 Invariant, Error, AC입니다.
+그리고 여기에 계약 ID(INV-1, ERR-1, AC-1)라는 바코드를 딱 붙여서 Cursor AI에게 던지는 것이 오늘 교육의 전체 그림인 디스커버리(Discovery) 트랙의 핵심입니다.
+
+
+문제(요구사항)에 대해서 Invariant, Error, AC라는 명확한 주머니 3개로 딱 나누어 주면, AI는 샛길로 새지 못하고 우리가 설계한 완벽한 톱니바퀴 안에서만 코딩을 하게 된다.
+복잡한 요구사항(개념)을 AI가 한 줄짜리 버그 없는 코드로 짤 수 있도록 '기계적인 입력 포맷'으로 완벽하게 쪼개어 재정의하라는 뜻.
+
+1. Invariant (불변식: 하늘이 두 쪽 나도 지켜야 할 절대 법칙)
+-의미: 시스템 내부 데이터가 가질 수 있는 '절대적인 한계선'입니다. 
+어떤 악의적인 입력이나 버그가 터져도 이 규칙이 깨지면 시스템 전체가 오염된 것으로 간주합니다.
+-장바구니 예시: "장바구니에 담긴 특정 상품의 수량($N$)은 항상 $N \ge 1$ 이여야 한다." 또는 "총 결제 금액은 절대 음수($-$)가 될 수 없다."
+-TDD 연결: Track B (Entity 트랙)의 유닛 테스트로 가장 먼저 검증해야 하는 핵심 알맹이입니다.
+
+2. Error (예외 처리: 잘못된 입력에 대한 방어벽)
+-의미: 사용자가 실수로 혹은 고의로 잘못된 값을 입력했을 때, 시스템이 뻗지 않고 "이건 잘못된 거야!"라고 우아하게 거절하는 규칙입니다.
+-장바구니 예시: "수량 변경 창에 -5나 abc(문자열)를 입력하면 ValueError("올바르지 않은 수량입니다")를 발생시키고 요청을 차단해야 한다."
+-TDD 연결: 불변식(Invariant)을 지키기 위해 외곽에서 쳐주는 '1차 방어선 테스트'가 됩니다.
+
+3. AC (Acceptance Criteria / 인수 조건: 사용자가 체감하는 정상 흐름)
+-의미: 앞의 두 안전장치(Invariant, Error)가 완벽하다는 전제하에, 사용자가 원래 하고 싶었던 '행복한 정상 작동 시나리오(Happy Path)'입니다.
+-장바구니 예시: "수량이 정상적으로 변경되면, 해당 상품의 소계(수량 × 단가)와 장바구니 총액이 즉시 재계산되어 화면에 반영되어야 한다."
+-TDD 연결: 주로 뷰 화면이나 API를 다루는 Track A (Boundary 트랙)의 합격 기준이 됩니다.
+
+
+
+README.md 의 역할과 범위는 무엇인가?
+
+
+SKILL 에 대한 설명
+Commands가 "저장된 한 덩어리 프롬프트"라면, Skills는 여러 단계·규칙·심지어 실행 스크립트까지 묶은 "작업 매뉴얼" 입니다. Rules보다 상세하고, 다단계 워크플로에 적합합니다. 핵심 차이는 자동 호출: Agent가 상황을 보고 관련 있다고 판단하면 스스로 그 Skill을 끌어다 씁니다(원하면 수동 호출만 하도록 막을 수도 있음). Skills는 Anthropic에서 시작된 개방형 표준(Agent Skills, agentskills.io)이며 Cursor가 이를 채택했습니다.
+
+
+
+H.1 Hooks란 무엇인가
+Hooks는 에이전트 실행 루프의 정해진 단계 전후에 사용자 스크립트를 실행하는 장치. 스크립트는 별도 프로세스로 실행되며, stdin으로 JSON을 받고 stdout으로 JSON을 돌려주는 방식으로 Cursor와 양방향 통신합니다.
+Hooks로 할 수 있는 일:
+•	파일 편집 후 포매터 자동 실행
+•	위험한 셸 명령(rm -rf, git push --force 등) 차단
+•	모델로 보내기 전에 비밀키/PII 마스킹(redact)
+•	모든 에이전트 동작 감사 로그(audit) 기록
+•	세션 시작 시 컨텍스트 자동 주입
+중요한 구분: Rules는 "AI에게 무엇을 알려줄지(맥락)"를 다루고, Hooks는 "AI가 실제로 무엇을 하도록/못 하도록 할지(실행 통제)"를 다룹니다.
+
+
+
+
