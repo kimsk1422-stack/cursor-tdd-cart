@@ -13,10 +13,16 @@ THRESHOLD = 50000  # INV-2 문턱 금액 (SSOT)
 
 
 def subtotal(items):
-    # TODO(E-1): items is None 이면 TypeError
-    # TODO(E-2): price/qty 음수면 ValueError(인덱스 포함)
-    # TODO(INV-1): Σ price*qty 반환
-    raise NotImplementedError
+    if items is None:
+        raise TypeError  # E-1
+    total = 0
+    for index, item in enumerate(items):
+        price = item["price"]
+        qty = item["qty"]
+        if price < 0 or qty < 0:
+            raise ValueError(f"negative price or qty at index {index}")  # E-2
+        total += price * qty  # INV-1
+    return total  # INV-1
 
 
 def apply_threshold_discount(amount):
